@@ -58,21 +58,25 @@ set ERROR_CODE=0
 @setlocal
 
 @REM ==== START VALIDATION ====
-if not "%JAVA_HOME%" == "" goto OkJHome
+set "MAVEN_JAVA_EXE="
+
+if not "%JAVA_HOME%" == "" (
+  if exist "%JAVA_HOME%\bin\java.exe" (
+    set "MAVEN_JAVA_EXE=%JAVA_HOME%\bin\java.exe"
+    goto init
+  )
+)
+
+for %%I in (java.exe) do set "MAVEN_JAVA_EXE=%%~$PATH:I"
+if not "%MAVEN_JAVA_EXE%" == "" goto init
 
 echo.
-echo Error: JAVA_HOME not found in your environment. >&2
-echo Please set the JAVA_HOME variable in your environment to match the >&2
-echo location of your Java installation. >&2
-echo.
-goto error
-
-:OkJHome
-if exist "%JAVA_HOME%\bin\java.exe" goto init
-
-echo.
-echo Error: JAVA_HOME is set to an invalid directory. >&2
-echo JAVA_HOME = "%JAVA_HOME%" >&2
+if "%JAVA_HOME%" == "" (
+  echo Error: JAVA_HOME not found in your environment, and java.exe was not found in PATH. >&2
+) else (
+  echo Error: JAVA_HOME is set to an invalid directory, and java.exe was not found in PATH. >&2
+  echo JAVA_HOME = "%JAVA_HOME%" >&2
+)
 echo Please set the JAVA_HOME variable in your environment to match the >&2
 echo location of your Java installation. >&2
 echo.
@@ -116,7 +120,6 @@ for /F "usebackq delims=" %%a in ("%MAVEN_PROJECTBASEDIR%\.mvn\jvm.config") do s
 
 :endReadAdditionalConfig
 
-SET MAVEN_JAVA_EXE="%JAVA_HOME%\bin\java.exe"
 set WRAPPER_JAR="%MAVEN_PROJECTBASEDIR%\.mvn\wrapper\maven-wrapper.jar"
 set WRAPPER_LAUNCHER=org.apache.maven.wrapper.MavenWrapperMain
 
@@ -158,7 +161,7 @@ if exist %WRAPPER_JAR% (
 @REM work with both Windows and non-Windows executions.
 set MAVEN_CMD_LINE_ARGS=%*
 
-%MAVEN_JAVA_EXE% ^
+"%MAVEN_JAVA_EXE%" ^
   %JVM_CONFIG_MAVEN_PROPS% ^
   %MAVEN_OPTS% ^
   %MAVEN_DEBUG_OPTS% ^

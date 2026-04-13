@@ -25,6 +25,4 @@ class NameController: HttpServlet() {
     fun getStudents(): ArrayList<Student> {
         return list;
     }
-
-
 }
